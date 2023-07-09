@@ -25,26 +25,28 @@ jobs:
         format: "${major}.${minor}.${patch}-prerelease${increment}"
       id: version
         
-
-        
     - name: Docker login
       env:
         DOCKER_USER: ${{ secrets.DOCKER_USER }}
         DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
-        NEW_VERSION: ${{ steps.version.outputs.version }}
       run: |
         docker login -u $DOCKER_USER -p $DOCKER_PASS
         echo "New Version: $NEW_VERSION!!!!!"
         
-   # - name: Build docker image
-  #    run: |
-   #     docker build -t nick41bch/docker-graphql:0.0.2 .
-    #    docker build -t nick41bch/docker-graphql:latest .
+    - name: Build docker image
+      env:
+        NEW_VERSION: ${{ steps.version.outputs.version }}
+      run: |
+        docker build -t nick41bch/docker-graphql:$NEW_VERSION .
+        docker build -t nick41bch/docker-graphql:latest .
         
-    #- name: Push docker image
-     # run: |
-      #  docker push nick41bch/docker-graphql:0.0.2
-       # docker push nick41bch/docker-graphql:latest
+    - name: Push docker image
+      env:
+        NEW_VERSION: ${{ steps.version.outputs.version }}
+      run: |
+        docker push nick41bch/docker-graphql:$NEW_VERSION
+        docker push nick41bch/docker-graphql:latest
+      
     
 #    - name: Build the Docker image
 #      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
